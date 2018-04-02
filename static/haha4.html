@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+  <head>
+    <style>
+        body {
+            background-image: url("/s/NCGSLShorelan.jpg");
+            background-size: cover;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+        }
+        .tsk {
+            color: white;
+        }
+        #button {
+            
+            border-radius: 3px;
+            background: #27ae60;
+            color: #fff !important;
+            text-transform: uppercase;
+            padding: 8px 14px 8px 14px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+            display: inline-block;
+            margin: 10px 5px 10px 2px;
+        }
+
+        .tst2 {
+           height: 30px;
+           width: 20%;
+           margin: 0px 12px 5px;
+        }
+
+        .gaga {
+           height: 30px;
+           width: 20%;
+           margin: 0px 15px 7px;
+        }
+        .haha {
+          position: relative;
+           border: 2px solid PaleGreen;
+           outline: 1px solid PaleGreen;
+           width: 70%;
+           height: 40px;
+           font-size: 24px;
+
+        }
+    </style>
+    <title>dingdong</title>
+
+    <script src="/s/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+
+    $('form').on('keyup keypress', function(e) {
+      var keyCode = e.keyCode || e.which;
+      if (keyCode === 13) { 
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    var idx = 2
+    $("form").keyup(function(){
+        // alert($("input[type='text']").length == );
+        //alert($this.val()) != "");
+        if(idx % 2 == 1){
+          var b = '<br>';
+        }else{
+          var b = '';
+        }
+        if($("input[type='text']:last").val() != "" && $("input[type='text']").length >= idx){
+            $("input[type='text']:last").after(b + '<input class="gaga" type="text" name="gaga">');
+            idx += 1;
+        };
+    });
+    $("form").on('keydown', 'input[type="text"]', function(){
+        $(this).focus();
+        $(this).attr('class', 'haha');
+    });
+
+    $("form").on('mouseleave', 'input[type="text"]', function(){
+        $(this).attr('class', 'gaga');
+    }); 
+
+    $("#submit").click(function(e){
+        
+        var vls = $('input[name="gaga"]').map(function(){
+            if($.trim(this.value) != ""){
+                return this.value
+            };
+        }).get();
+
+        if(vls.length == 0){return};
+
+        var ds = new Date().toISOString().slice(0,19);
+        url = $('form').attr( "action");
+        var tnm = $('input[name="task"]').val();
+
+        var ts = tnm + ds;
+        var posting = $.post(url, JSON.stringify({'v': vls, 't': ts}), null, 'json');
+        posting.done(function( data ) {
+            8+7;
+        });
+        e.preventDefault();
+    }); 
+});
+</script>
+</head>
+<body>
+
+<form action="/haha">
+  <a class="tsk">task name:</a> <input type="text" name="task"><br>
+  <br>
+  <br>
+  <input class="gaga" type="text" name="gaga"><br>
+  <input id="submit" class="" type="submit" value="Submit">
+</form>
+
+</body>
+</html>
