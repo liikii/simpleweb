@@ -25,10 +25,12 @@
             background-color: #32cd32;
             top: 40%;
             left: 50%;
-            font-size: 18px;
+            font-size: 20px;
             padding-left: 25px;
             padding-right: 25px;
             border-radius: 16px;
+            font-weight: bold;
+            z-index: 1;
          /*   margin-top: -100px;
             margin-left: -100px;*/
         }
@@ -119,11 +121,23 @@
             right: 4px;
             color: white;
         }
+        #message {
+            color: greenyellow;
+            display: block;
+            float: right;
+            position: absolute;
+            top: -19px;
+            right: 4px;
+            width: 40%;
+            z-index: -2;
+            /*color: white;*/
+        }
     </style>
     <title>dingdong</title>
 
     <script src="/s/jquery.min.js"></script>
 <script>
+
 $(document).ready(function(){
 
     $('form').on('keyup keypress', function(e) {
@@ -156,7 +170,10 @@ $(document).ready(function(){
     $("form").on('mouseleave', 'input[type="text"]', function(){
         $(this).attr('class', 'gaga');
     }); 
-
+    // focusout
+    $("form").on('focusout', 'input[type="text"]', function(){
+        $(this).attr('class', 'gaga');
+    }); 
 
     // #cls
     $("#cls").click(function(){
@@ -176,7 +193,7 @@ $(document).ready(function(){
             $('#ppv').attr('class', 'ppv_red');
             $('#ppv').show();
             $('#prompt').text("提交失败，词不能为空 !!!");
-            $('#ppv').delay(4000).fadeOut('slow');
+            $('#ppv').delay(3000).fadeOut('slow');
             return
         };
 
@@ -189,20 +206,21 @@ $(document).ready(function(){
             $('#ppv').attr('class', 'ppv_red');
             $('#ppv').show();
             $('#prompt').text("提交失败，任务名不能为空 !!!");
-            $('#ppv').delay(4000).fadeOut('slow');
+            $('#ppv').delay(3000).fadeOut('slow');
             return
         };
 
-        var ts = tnm + ds;
+        var ts = tnm + '_' +ds;
         var posting = $.post(url, JSON.stringify({'v': vls, 't': ts}), null, 'json');
         posting.done(function( data ) {
             $('#ppv').attr('class', 'ppv');
             $('#ppv').show();
             $('#prompt').text("ok ok");
-            $('#ppv').delay(2000).fadeOut('slow');
+            $('#ppv').delay(1500).fadeOut('slow');
             return
             ;
         });
+
         posting.fail(function( data ) {
             $('#cls').attr('class', 'play');
             $('#ppv').attr('class', 'ppv_red');
@@ -213,7 +231,28 @@ $(document).ready(function(){
         });
         
     }); 
+
+    var host = window.location.host;
+    var ws = new WebSocket('ws://' + host + '/ws');
+    var message = $('#message');
+     ws.onopen = function(){
+      // $message.attr("class", 'label label-success');
+      message.text('hello');
+    };
+    ws.onmessage = function(ev){
+      message.append('<p>' + ev.data + '</p><br>');
+    };
+    ws.onclose = function(ev){
+      // $message.attr("class", 'label label-important');
+      message.text('closed');
+    };
+    ws.onerror = function(ev){
+      // $message.attr("class", 'label label-important');
+      message.text('server closed');
+    };
 });
+
+
 </script>
 </head>
 
@@ -228,8 +267,9 @@ $(document).ready(function(){
   <br>
   <input class="gaga" type="text" name="gaga"><br>
   <!-- <input id="submit" class="" type="submit" value="Submit"> -->
-  <button id="submit" class="button">提交</button>
+  <button id="submit" class="button">提  交</button>
 </form>
+<div id='message'></div>
 
 </body>
 </html>
