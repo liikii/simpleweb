@@ -1,3 +1,6 @@
+"""
+auth: liikii.
+"""
 from json import loads
 import logging
 
@@ -81,7 +84,7 @@ class MainHandler(web.RequestHandler):
         bdy = self.request.body
         ubd = bdy.decode('utf-8')
         dt = loads(ubd)
-        self.set_status(404, 'ddd')
+        self.set_status(200, 'ok.')
         self.write('{}')
 
         ws = yield websocket_connect('ws://127.0.0.1:8666/ws')
