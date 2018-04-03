@@ -9,19 +9,85 @@
             height: 100%;
             background-color: black;
         }
+
+        .hdn {
+            visibility: hidden;
+        }
+        .play {
+            visibility: visible;  
+        }
+
+        .ppv {        
+        /*  width:200px;
+            height:200px;*/
+            position: fixed;
+            color: #F0FFF0;
+            background-color: #32cd32;
+            top: 40%;
+            left: 50%;
+            font-size: 18px;
+            padding-left: 25px;
+            padding-right: 25px;
+            border-radius: 16px;
+         /*   margin-top: -100px;
+            margin-left: -100px;*/
+        }
+        .ppv_red {        
+        /*  width:200px;
+            height:200px;*/
+            border-radius: 16px;
+            position: fixed;
+            color: #FFD700;
+            background-color: red;
+            top: 40%;
+            left: 50%;
+            font-size: 18px;
+            padding-left: 25px;
+            padding-right: 25px;
+         /*   margin-top: -100px;
+            margin-left: -100px;*/
+        }
+
+        .button {
+            position: relative;
+            background-color: #008080;
+            border: none;
+            color: #FFFFFF;
+            height: 40px;
+            width: 200px;
+            font-size: 28px;
+            margin-top: 40px;
+            margin-left: 150px;
+            text-align: center;
+            -webkit-transition-duration: 0.4s; /* Safari */
+            transition-duration: 0.4s;
+            text-decoration: none;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .button:after {
+            content: "";
+            background: #f1f1f1;
+            display: block;
+            position: absolute;
+            padding-top: 300%;
+            padding-left: 350%;
+            margin-left: -20px !important;
+            margin-top: -120%;
+            opacity: 0;
+            transition: all 2s
+        }
+
+        .button:active:after {
+            padding: 0;
+            margin: 0;
+            opacity: 3;
+            transition: 0s
+        }
+
         .tsk {
             color: white;
-        }
-        #button {
-            
-            border-radius: 3px;
-            background: #27ae60;
-            color: #fff !important;
-            text-transform: uppercase;
-            padding: 8px 14px 8px 14px;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.5);
-            display: inline-block;
-            margin: 10px 5px 10px 2px;
         }
 
         .tst2 {
@@ -43,6 +109,15 @@
            height: 40px;
            font-size: 24px;
 
+        }
+
+        #cls {
+            display: block;
+            float: right;
+            position: absolute;
+            top: -19px;
+            right: 4px;
+            color: white;
         }
     </style>
     <title>dingdong</title>
@@ -82,38 +157,78 @@ $(document).ready(function(){
         $(this).attr('class', 'gaga');
     }); 
 
+
+    // #cls
+    $("#cls").click(function(){
+        $('#ppv').attr('class', 'hdn');
+        $('#cls').attr('class', 'hdn');
+    }); 
+
     $("#submit").click(function(e){
-        
+        e.preventDefault();
         var vls = $('input[name="gaga"]').map(function(){
             if($.trim(this.value) != ""){
                 return this.value
             };
         }).get();
 
-        if(vls.length == 0){return};
+        if(vls.length == 0){
+            $('#ppv').attr('class', 'ppv_red');
+            $('#ppv').show();
+            $('#prompt').text("提交失败，词不能为空 !!!");
+            $('#ppv').delay(4000).fadeOut('slow');
+            return
+        };
 
         var ds = new Date().toISOString().slice(0,19);
         url = $('form').attr( "action");
         var tnm = $('input[name="task"]').val();
 
+        if($.trim(tnm) == ""){
+            // ppv_red
+            $('#ppv').attr('class', 'ppv_red');
+            $('#ppv').show();
+            $('#prompt').text("提交失败，任务名不能为空 !!!");
+            $('#ppv').delay(4000).fadeOut('slow');
+            return
+        };
+
         var ts = tnm + ds;
         var posting = $.post(url, JSON.stringify({'v': vls, 't': ts}), null, 'json');
         posting.done(function( data ) {
-            8+7;
+            $('#ppv').attr('class', 'ppv');
+            $('#ppv').show();
+            $('#prompt').text("ok ok");
+            $('#ppv').delay(2000).fadeOut('slow');
+            return
+            ;
         });
-        e.preventDefault();
+        posting.fail(function( data ) {
+            $('#cls').attr('class', 'play');
+            $('#ppv').attr('class', 'ppv_red');
+            $('#ppv').show();
+            $('#prompt').text("远程服务器错误，请联系客服。18818189969");
+            return
+            ;
+        });
+        
     }); 
 });
 </script>
 </head>
-<body>
 
+<body>
+<div id="ppv" class='hdn'>
+    <p id="cls" class="hdn">X</p>
+    <p id="prompt"></p>
+</div>
 <form action="/haha">
   <a class="tsk">task name:</a> <input type="text" name="task"><br>
   <br>
   <br>
   <input class="gaga" type="text" name="gaga"><br>
-  <input id="submit" class="" type="submit" value="Submit">
+  <!-- <input id="submit" class="" type="submit" value="Submit"> -->
+  <button id="submit" class="button">提交</button>
 </form>
 
 </body>

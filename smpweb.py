@@ -2,6 +2,21 @@ from tornado import web, gen, ioloop
 from json import loads
 
 
+class IdxHandler(web.RequestHandler):
+    @gen.coroutine
+    def get(self):
+        # web.StaticFileHandler, {"path": './static', "default_filename": "haha4.html"}
+        f = open('./static/haha4.html', 'r', encoding='utf8')
+        d = f.read()
+        f.close()
+        self.write(d)
+        return
+
+    @gen.coroutine
+    def post(self):
+        return
+
+
 class MHandler(web.RequestHandler):
     @gen.coroutine
     def get(self):
@@ -11,14 +26,16 @@ class MHandler(web.RequestHandler):
     def post(self):
         bdy = self.request.body
         dt = loads(bdy.decode('utf-8'))
-        print(dt)
+        self.set_status(404, 'ddd')
+        self.write('{}')
         return
 
 
 def make_app():
     return web.Application([
+        (r'/favicon.ico', MHandler),
         (r'/haha', MHandler),
-        (r'/?()', web.StaticFileHandler, {"path": './static', "default_filename": "haha4.html"}),
+        (r'/?', IdxHandler),
         (r'/s/(.*)', web.StaticFileHandler, {"path": './static'})
     ], autoreload=True)
 
