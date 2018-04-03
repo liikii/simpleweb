@@ -2,7 +2,9 @@
 auth: liikii.
 """
 from json import loads
+import signal
 import logging
+import sys
 
 from tornado.websocket import websocket_connect
 from tornado import web, gen, ioloop, websocket
@@ -21,10 +23,21 @@ fh.setFormatter(formatter)
 logger.addHandler(fh)
 
 
+def signal_handler(signum, frame):
+    # catch the terminal stop/kill signal.close the IOLoop
+    ioloop.IOLoop.instance().stop()
+    sys.stdout.write("\n\n  --- exit successfully, bye ---  \n\n")
+    sys.exit(0)
+
+
 class WebSocketHandler(websocket.WebSocketHandler):
     clt_s = set()
     # csz = 108
     msg = []
+
+    def __init__(self, application, request, **kwargs):
+        super(WebSocketHandler, self).__init__(application, request, **kwargs)
+        self.host = None
 
     @classmethod
     def send_updates(cls, chat):
@@ -38,6 +51,7 @@ class WebSocketHandler(websocket.WebSocketHandler):
     def open(self):
         x_real_ip = self.request.headers.get("X-Real-IP")
         remote_ip = x_real_ip or self.request.remote_ip
+        self.host = remote_ip
         logger.info('log in %s ' % remote_ip)
         WebSocketHandler.clt_s.add(self)
         if len(WebSocketHandler.clt_s) > 200:
@@ -56,7 +70,8 @@ class WebSocketHandler(websocket.WebSocketHandler):
 
     def on_close(self):
         print('close')
-        WebSocketHandler.clt_s.add(self)
+        logger.info('log out %s ' % self.host)
+        WebSocketHandler.clt_s.remove(self)
 
 
 class IdxHandler(web.RequestHandler):
@@ -104,6 +119,10 @@ def make_app():
 
 # curl -vX POST http://127.0.0.1:8666/haha -d @haha17.txt --header "Content-Type: application/json"
 if __name__ == "__main__":
+    # for linux
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTSTP, signal_handler)
+    signal.signal(signal.SIGQUIT, signal_handler)
     app = make_app()
     app.listen(8666)
     ioloop.IOLoop.current().start()

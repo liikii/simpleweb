@@ -211,7 +211,7 @@ $(document).ready(function(){
         };
 
         var ts = tnm + '_' +ds;
-        var posting = $.post(url, JSON.stringify({'v': vls, 't': ts}), null, 'json');
+        var posting = $.post(url, JSON.stringify({'v': $.unique(vls), 't': ts}), null, 'json');
         posting.done(function( data ) {
             $('#ppv').attr('class', 'ppv');
             $('#ppv').show();
