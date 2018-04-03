@@ -240,7 +240,7 @@ $(document).ready(function(){
       message.text('hello');
     };
     ws.onmessage = function(ev){
-      message.append('<p>' + ev.data + '</p><br>');
+      message.append('<p>' + ev.data + '</p>');
     };
     ws.onclose = function(ev){
       // $message.attr("class", 'label label-important');
