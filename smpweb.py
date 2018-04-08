@@ -8,7 +8,10 @@ import sys
 
 from tornado.websocket import websocket_connect
 from tornado import web, gen, ioloop, websocket
+import tornado.options
+from tornado.options import define, options
 
+define("port", default=9666, help="run on the given port", type=int)
 
 logger = logging.getLogger('simple_task')
 logger.setLevel(logging.DEBUG)
@@ -123,6 +126,7 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTSTP, signal_handler)
     signal.signal(signal.SIGQUIT, signal_handler)
+    tornado.options.parse_command_line()
     app = make_app()
-    app.listen(8666)
+    app.listen(options.port)
     ioloop.IOLoop.current().start()
