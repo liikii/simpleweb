@@ -12,6 +12,8 @@ import tornado.options
 from tornado.options import define, options
 
 define("port", default=9666, help="run on the given port", type=int)
+tornado.options.parse_command_line()
+port = options.port
 
 logger = logging.getLogger('simple_task')
 logger.setLevel(logging.DEBUG)
@@ -105,7 +107,7 @@ class MainHandler(web.RequestHandler):
         self.set_status(200, 'ok.')
         self.write('{}')
 
-        ws = yield websocket_connect('ws://127.0.0.1:8666/ws')
+        ws = yield websocket_connect('ws://127.0.0.1:%s/ws' % port)
         ws.write_message(ubd)
         return
 
@@ -126,7 +128,6 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTSTP, signal_handler)
     signal.signal(signal.SIGQUIT, signal_handler)
-    tornado.options.parse_command_line()
     app = make_app()
-    app.listen(options.port)
+    app.listen(port)
     ioloop.IOLoop.current().start()
